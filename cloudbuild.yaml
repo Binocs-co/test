@@ -1,0 +1,20 @@
+# Use: gcloud builds submit --region=us-west1 --project=binocs-staging --config cloudbuild.yaml
+steps:
+  # push container image
+  - name: "gcr.io/kaniko-project/executor:latest"
+    args:
+      - --destination=gcr.io/$PROJECT_ID/shortener:latest
+      - --cache=true
+  # deploy container image to GKE
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "shortener"
+      - "--image"
+      - "gcr.io/$PROJECT_ID/shortener:latest"
+      - "--region"
+      - "us-west1"
+# images:
+#   - "gcr.io/$PROJECT_ID/binocs-profile:latest"
